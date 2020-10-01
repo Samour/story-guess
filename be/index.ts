@@ -1,13 +1,29 @@
 import * as express from 'express';
 import { getManager } from './servicesManager';
+import authenticationErrorHandler from './handlers/authenticationErrorHandler';
+import restErrorHandler from './handlers/restErrorHandler';
 
 const main = async (): Promise<void> => {
   const app = express();
-  app.use(express.json());
 
-  app.use('/healthCheck', getManager().getHealthCheckController());
-  app.use('/register', await getManager().getRegistrationController());
-  app.use('/session', await getManager().getSessionController());
+  app.use(express.json())
+    .use(getManager().getAuthenticationInterceptor()({
+      include: [
+        '/',
+        '/healthCheck/secure',
+        '/session/logout',
+      ],
+      exclude: [
+        '/healthCheck',
+        '/register',
+        '/session',
+      ],
+    }))
+    .use('/healthCheck', getManager().getHealthCheckController())
+    .use('/register', await getManager().getRegistrationController())
+    .use('/session', await getManager().getSessionController())
+    .use(authenticationErrorHandler)
+    .use(restErrorHandler);
 
   const port = getManager().getConfig().server.port;
   app.listen(port, () => console.log(`Server started on port ${port}`));

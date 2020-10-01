@@ -5,9 +5,12 @@ import routeBridge from '../../utils/routeBridge';
 export default (config: IConfig): Router => {
   const router = Router();
 
-  router.get('/', routeBridge(async () => ({
+  const handler = routeBridge(async () => ({
     appName: config.appName,
-  })));
+  }));
+
+  router.get('/', handler)
+    .get('/secure', handler);
 
   return router;
 };

@@ -14,6 +14,10 @@ export class SessionRepository extends AbstractRepository<ISession> implements I
   }
 
   async findActiveSession(_id: string): Promise<ISession> {
-    return this.collection.findOne({ _id, sessionExpiry: { $gt: new Date() } });
+    return this.collection.findOne({
+      _id,
+      sessionExpiry: { $gt: new Date() },
+      removed: { $exists: 0 },
+    });
   }
 }

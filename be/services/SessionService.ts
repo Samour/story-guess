@@ -9,14 +9,16 @@ import {
 import { ISessionRepository } from '../repositories/SessionRepository';
 import { IUserTokenService } from './UserTokenService';
 import { IUserService } from './UserService';
-import { ISession } from '../model/Session';
+import { ISession, SessionRemovedReason } from '../model/Session';
 import { IUser } from '../model/User';
 import { Optional } from '../../ts-shared/optional';
 import { ISessionConfig } from '../config';
+import AuthenticationError from '../exceptions/AuthenticationError';
 
 export interface ISessionService {
   createSession: (request: CreateSessionRequest) => Promise<CreateSessionResponse>;
   fetchToken: (request: RefreshTokenRequest) => Promise<RefreshTokenResponse>;
+  logout: (sessionId: string) => Promise<void>;
 }
 
 const SECRET_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()';
@@ -42,7 +44,7 @@ export class SessionService implements ISessionService {
       .map((p) => bcrypt.compare(request.password, p))
       .orElse(Promise.resolve(false));
     if (!passwordValid) {
-      throw new Error('Username or password incorrect');
+      throw new AuthenticationError('Username or password incorrect');
     }
 
     const sessionSecret: string = this.createSecret();
@@ -66,7 +68,7 @@ export class SessionService implements ISessionService {
   async fetchToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {
     const session = await this.sessionRepository.findActiveSession(request.sessionId);
     if (!session || !(await bcrypt.compare(request.sessionSecret, session.sessionSecret))) {
-      throw new Error('Invalid session');
+      throw new AuthenticationError('Invalid session');
     }
 
     return {
@@ -79,5 +81,19 @@ export class SessionService implements ISessionService {
       (await this.userService.findUserById(session.userId)).get(),
       session._id,
     );
+  }
+
+  async logout(sessionId: string): Promise<void> {
+    const session = await this.sessionRepository.findActiveSession(sessionId);
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    session.removed = {
+      reason: SessionRemovedReason.LOGOUT,
+      removedBy: session.userId,
+      removedAt: new Date(),
+    };
+    await this.sessionRepository.save(session);
   }
 }

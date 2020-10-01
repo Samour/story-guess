@@ -10,6 +10,7 @@ import sessionController from './routes/session';
 import { ISessionService, SessionService } from './services/SessionService';
 import { IUserTokenService, UserTokenService } from './services/UserTokenService';
 import { ISessionRepository, SessionRepository } from './repositories/SessionRepository';
+import authenticationInterceptor, { AuthenticationInterceptorFactory } from './interceptors/AuthenticationInterceptor';
 
 class ServicesManager {
 
@@ -24,6 +25,8 @@ class ServicesManager {
   }
 
   getConfig: () => IConfig = memo(() => config);
+
+  getAuthenticationInterceptor: () => AuthenticationInterceptorFactory = memo(() => authenticationInterceptor(this.getUserTokenService()));
 
   getHealthCheckController: () => Router = memo(() => healthCheckController(this.getConfig()));
 

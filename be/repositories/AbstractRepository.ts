@@ -1,12 +1,16 @@
 import { Collection } from 'mongodb';
 import { IListener } from './listeners/IListener';
 
-export interface IAbstractRepository<T> {
+interface Entity {
+  _id: string;
+}
+
+export interface IAbstractRepository<T extends Entity> {
   save: (value: T) => Promise<void>;
   findById: (id: string) => Promise<T | null>;
 }
 
-export abstract class AbstractRepository<T> implements IAbstractRepository<T> {
+export abstract class AbstractRepository<T extends Entity> implements IAbstractRepository<T> {
 
   constructor(protected readonly collection: Collection, private readonly listeners: IListener<T>[] = []) { }
 
@@ -16,7 +20,7 @@ export abstract class AbstractRepository<T> implements IAbstractRepository<T> {
 
   async save(value: T): Promise<void> {
     this.prePersist(value);
-    await this.collection.insertOne(value);
+    await this.collection.updateOne({ _id: value._id }, { $set: value }, { upsert: true });
   }
 
   async findById(_id: string): Promise<T | null> {
