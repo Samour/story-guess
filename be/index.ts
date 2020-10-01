@@ -7,6 +7,7 @@ const main = async (): Promise<void> => {
 
   app.use('/healthCheck', getManager().getHealthCheckController());
   app.use('/register', await getManager().getRegistrationController());
+  app.use('/session', await getManager().getSessionController());
 
   const port = getManager().getConfig().server.port;
   app.listen(port, () => console.log(`Server started on port ${port}`));

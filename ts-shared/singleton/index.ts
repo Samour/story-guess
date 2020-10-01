@@ -19,7 +19,14 @@ export const memo = <T>(provider: () => T, options: MemoOptions = {}): () => T =
     if (!hasValue) {
       inInvocation = true;
       value = provider();
-      inInvocation = false;
+      if (typeof (value as unknown as Promise<T>)?.then === 'function') {
+        // Detect reentrancy in async providers
+        (value as unknown as Promise<T>).then(() => {
+          inInvocation = false;
+        });
+      } else {
+        inInvocation = false;
+      }
       hasValue = true;
     }
 

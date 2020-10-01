@@ -3,9 +3,12 @@ import * as bcrypt from 'bcrypt';
 import { RegisterUserRequest, RegisterUserResponse } from '../../ts-shared/dtos/user';
 import { IUser } from '../model/User';
 import { IUserRepository } from '../repositories/UserRepository';
+import { Optional, ofNullable } from '../../ts-shared/optional';
 
 export interface IUserService {
   registerUser: (request: RegisterUserRequest) => Promise<RegisterUserResponse>;
+  findUserById: (userId: string) => Promise<Optional<IUser>>;
+  findUserByLoginId: (loginId: string) => Promise<Optional<IUser>>;
 }
 
 export class UserService implements IUserService {
@@ -29,5 +32,13 @@ export class UserService implements IUserService {
       loginId: user.loginId,
       displayName: user.displayName,
     };
+  }
+
+  async findUserById(userId: string): Promise<Optional<IUser>> {
+    return ofNullable(await this.userRepository.findById(userId));
+  }
+
+  async findUserByLoginId(loginId: string): Promise<Optional<IUser>> {
+    return ofNullable(await this.userRepository.findByLoginId(loginId));
   }
 }

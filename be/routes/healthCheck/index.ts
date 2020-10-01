@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import { IConfig } from '../../config';
 import routeBridge from '../../utils/routeBridge';
 
-export default (): Router => {
+export default (config: IConfig): Router => {
   const router = Router();
 
   router.get('/', routeBridge(async () => ({
-    appName: 'story-guess-be',
+    appName: config.appName,
   })));
 
   return router;
