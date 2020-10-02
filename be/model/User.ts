@@ -3,6 +3,7 @@ export interface IUser {
   loginId: string;
   displayName: string;
   password: string;
+  roles: string[];
   createdAt: Date;
   updatedAt: Date;
 }

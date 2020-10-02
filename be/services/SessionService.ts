@@ -14,6 +14,7 @@ import { IUser } from '../model/User';
 import { Optional } from '../../ts-shared/optional';
 import { ISessionConfig } from '../config';
 import AuthenticationError from '../exceptions/AuthenticationError';
+import { IRoleService } from './RoleService';
 
 export interface ISessionService {
   createSession: (request: CreateSessionRequest) => Promise<CreateSessionResponse>;
@@ -26,8 +27,8 @@ const SECRET_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456
 export class SessionService implements ISessionService {
 
   constructor(private readonly userTokenService: IUserTokenService, private readonly userService: IUserService,
-    private readonly sessionRepository: ISessionRepository, private readonly config: ISessionConfig,
-    private readonly saltRounds: number) { }
+    private readonly roleService: IRoleService, private readonly sessionRepository: ISessionRepository,
+    private readonly config: ISessionConfig, private readonly saltRounds: number) { }
 
   private createSecret(): string {
     let secret: string[] = [];
@@ -61,7 +62,7 @@ export class SessionService implements ISessionService {
     return {
       sessionId: session._id,
       sessionSecret,
-      token: await this.createToken(session),
+      token: await this.createToken(user.get(), session._id),
     };
   }
 
@@ -72,14 +73,15 @@ export class SessionService implements ISessionService {
     }
 
     return {
-      token: await this.createToken(session),
+      token: await this.createToken((await this.userService.findUserById(session.userId)).get(), session._id),
     };
   }
 
-  private async createToken(session: ISession): Promise<string> {
+  private async createToken(user: IUser, sessionId: string): Promise<string> {
     return this.userTokenService.createToken(
-      (await this.userService.findUserById(session.userId)).get(),
-      session._id,
+      user,
+      await this.roleService.loadRoles(user.roles),
+      sessionId,
     );
   }
 

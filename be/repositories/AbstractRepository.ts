@@ -6,9 +6,10 @@ interface Entity {
 }
 
 export interface IAbstractRepository<T extends Entity> {
-  save: (value: T) => Promise<void>;
-  findById: (id: string) => Promise<T | null>;
-  deleteById: (id: string) => Promise<void>;
+  save(value: T): Promise<void>;
+  findById(id: string): Promise<T | null>;
+  findByIds(ids: string[]): Promise<T[]>;
+  deleteById(id: string): Promise<void>;
 }
 
 export abstract class AbstractRepository<T extends Entity> implements IAbstractRepository<T> {
@@ -26,6 +27,10 @@ export abstract class AbstractRepository<T extends Entity> implements IAbstractR
 
   async findById(_id: string): Promise<T | null> {
     return this.collection.findOne({ _id });
+  }
+
+  async findByIds(ids: string[]): Promise<T[]> {
+    return this.cursorToList(this.collection.find({ _id: { $in: ids } }));
   }
 
   async deleteById(_id: string): Promise<void> {

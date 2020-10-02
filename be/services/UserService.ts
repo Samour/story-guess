@@ -21,6 +21,7 @@ export class UserService implements IUserService {
       loginId: request.loginId,
       displayName: request.displayName,
       password: await bcrypt.hash(request.password, this.passwordHashRounds),
+      roles: [],
       createdAt: null,
       updatedAt: null,
     };

@@ -8,10 +8,12 @@ import sessionController from './routes/session';
 import guessItemController from './routes/guessItem';
 import { GuessItemConverter, IGuessItemConverter } from './converters/GuessItemConverter';
 import { IUserService, UserService } from './services/UserService';
+import { IRoleService, RoleService } from './services/RoleService';
 import { ISessionService, SessionService } from './services/SessionService';
 import { IUserTokenService, UserTokenService } from './services/UserTokenService';
 import { GuessItemService, IGuessItemService } from './services/GuessItemService';
 import { IUserRepository, UserRepository } from './repositories/UserRepository';
+import { IRoleRepository, RoleRepository } from './repositories/RoleRepository';
 import { ISessionRepository, SessionRepository } from './repositories/SessionRepository';
 import { GuessItemRepository, IGuessItemRepository } from './repositories/GuessItemRepository';
 import authenticationInterceptor, { AuthenticationInterceptorFactory } from './interceptors/AuthenticationInterceptor';
@@ -47,9 +49,12 @@ class ServicesManager {
     this.getConfig().passwordHashRounds,
   ));
 
+  getRoleService: () => Promise<IRoleService> = memo(async () => new RoleService(await this.getRoleRepository()));
+
   getSessionService: () => Promise<ISessionService> = memo(async () => new SessionService(
     this.getUserTokenService(),
     await this.getUserService(),
+    await this.getRoleService(),
     await this.getSessionRepository(),
     this.getConfig().session,
     this.getConfig().passwordHashRounds,
@@ -63,23 +68,29 @@ class ServicesManager {
   ));
 
   getUserRepository: () => Promise<IUserRepository> = memo(async () => new UserRepository(
-    (await this.getMongoConnection()).collection('User')
+    (await this.getDb()).collection('User')
+  ));
+
+  getRoleRepository: () => Promise<IRoleRepository> = memo(async () => new RoleRepository(
+    (await this.getDb()).collection('Role'),
   ));
 
   getSessionRepository: () => Promise<ISessionRepository> = memo(async () => new SessionRepository(
-    (await this.getMongoConnection()).collection('Session'),
+    (await this.getDb()).collection('Session'),
   ));
 
   getGuessItemRepository: () => Promise<IGuessItemRepository> = memo(async () => new GuessItemRepository(
-    (await this.getMongoConnection()).collection('GuessItem'),
+    (await this.getDb()).collection('GuessItem'),
   ));
 
-  getMongoConnection: () => Promise<Db> = memo(() => new Promise((res, err) => {
+  getDb: () => Promise<Db> = memo(async () => (await this.getMongoConnection()).db(this.getConfig().db.db));
+
+  getMongoConnection: () => Promise<MongoClient> = memo(() => new Promise((res, err) => {
     MongoClient.connect(this.getConfig().db.url, (error, client) => {
       if (error) {
         err(error);
       } else {
-        res(client.db(this.getConfig().db.db));
+        res(client);
       }
     });
   }));

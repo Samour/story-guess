@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { getManager } from './servicesManager';
 import authenticationErrorHandler from './handlers/authenticationErrorHandler';
+import authorizationErrorHandler from './handlers/authorizationErrorHandler';
 import notFoundErrorHandler from './handlers/notFoundErrorHandler';
 import restErrorHandler from './handlers/restErrorHandler';
 
@@ -25,6 +26,7 @@ const main = async (): Promise<void> => {
     .use('/session', await getManager().getSessionController())
     .use('/guessItem', await getManager().getGuessItemController())
     .use(authenticationErrorHandler)
+    .use(authorizationErrorHandler)
     .use(notFoundErrorHandler)
     .use(restErrorHandler);
 
