@@ -13,7 +13,7 @@ export class UserRepository extends AbstractRepository<IUser> implements IUserRe
     super(collection, [new UpdateTimeListener()]);
   }
 
-  findByLoginId(loginId: string): Promise<IUser> {
+  async findByLoginId(loginId: string): Promise<IUser> {
     return this.collection.findOne({ loginId });
   }
 }

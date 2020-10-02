@@ -2,14 +2,18 @@ import { Router } from 'express';
 import { Db, MongoClient } from 'mongodb';
 import { memo } from '../ts-shared/singleton';
 import { config, IConfig } from './config';
-import { IUserRepository, UserRepository } from './repositories/UserRepository';
-import { IUserService, UserService } from './services/UserService';
 import healthCheckController from './routes/healthCheck';
 import registrationController from './routes/register';
 import sessionController from './routes/session';
+import guessItemController from './routes/guessItem';
+import { GuessItemConverter, IGuessItemConverter } from './converters/GuessItemConverter';
+import { IUserService, UserService } from './services/UserService';
 import { ISessionService, SessionService } from './services/SessionService';
 import { IUserTokenService, UserTokenService } from './services/UserTokenService';
+import { GuessItemService, IGuessItemService } from './services/GuessItemService';
+import { IUserRepository, UserRepository } from './repositories/UserRepository';
 import { ISessionRepository, SessionRepository } from './repositories/SessionRepository';
+import { GuessItemRepository, IGuessItemRepository } from './repositories/GuessItemRepository';
 import authenticationInterceptor, { AuthenticationInterceptorFactory } from './interceptors/AuthenticationInterceptor';
 
 class ServicesManager {
@@ -34,6 +38,10 @@ class ServicesManager {
 
   getSessionController: () => Promise<Router> = memo(async () => sessionController(await this.getSessionService()));
 
+  getGuessItemController: () => Promise<Router> = memo(async () => guessItemController(await this.getGuessItemService()));
+
+  getGuessItemConverter: () => IGuessItemConverter = memo(() => new GuessItemConverter());
+
   getUserService: () => Promise<IUserService> = memo(async () => new UserService(
     await this.getUserRepository(),
     this.getConfig().passwordHashRounds,
@@ -49,12 +57,21 @@ class ServicesManager {
 
   getUserTokenService: () => IUserTokenService = memo(() => new UserTokenService(this.getConfig().jwt));
 
+  getGuessItemService: () => Promise<IGuessItemService> = memo(async () => new GuessItemService(
+    this.getGuessItemConverter(),
+    await this.getGuessItemRepository(),
+  ));
+
   getUserRepository: () => Promise<IUserRepository> = memo(async () => new UserRepository(
     (await this.getMongoConnection()).collection('User')
   ));
 
   getSessionRepository: () => Promise<ISessionRepository> = memo(async () => new SessionRepository(
     (await this.getMongoConnection()).collection('Session'),
+  ));
+
+  getGuessItemRepository: () => Promise<IGuessItemRepository> = memo(async () => new GuessItemRepository(
+    (await this.getMongoConnection()).collection('GuessItem'),
   ));
 
   getMongoConnection: () => Promise<Db> = memo(() => new Promise((res, err) => {

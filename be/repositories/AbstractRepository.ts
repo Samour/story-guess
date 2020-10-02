@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, Cursor } from 'mongodb';
 import { IListener } from './listeners/IListener';
 
 interface Entity {
@@ -8,6 +8,7 @@ interface Entity {
 export interface IAbstractRepository<T extends Entity> {
   save: (value: T) => Promise<void>;
   findById: (id: string) => Promise<T | null>;
+  deleteById: (id: string) => Promise<void>;
 }
 
 export abstract class AbstractRepository<T extends Entity> implements IAbstractRepository<T> {
@@ -25,5 +26,15 @@ export abstract class AbstractRepository<T extends Entity> implements IAbstractR
 
   async findById(_id: string): Promise<T | null> {
     return this.collection.findOne({ _id });
+  }
+
+  async deleteById(_id: string): Promise<void> {
+    await this.collection.deleteOne({ _id });
+  }
+
+  protected async cursorToList<D>(cursor: Cursor<D>): Promise<D[]> {
+    const list: D[] = [];
+    await cursor.forEach((d) => list.push(d));
+    return list;
   }
 }

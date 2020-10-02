@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { getManager } from './servicesManager';
 import authenticationErrorHandler from './handlers/authenticationErrorHandler';
+import notFoundErrorHandler from './handlers/notFoundErrorHandler';
 import restErrorHandler from './handlers/restErrorHandler';
 
 const main = async (): Promise<void> => {
@@ -22,7 +23,9 @@ const main = async (): Promise<void> => {
     .use('/healthCheck', getManager().getHealthCheckController())
     .use('/register', await getManager().getRegistrationController())
     .use('/session', await getManager().getSessionController())
+    .use('/guessItem', await getManager().getGuessItemController())
     .use(authenticationErrorHandler)
+    .use(notFoundErrorHandler)
     .use(restErrorHandler);
 
   const port = getManager().getConfig().server.port;
