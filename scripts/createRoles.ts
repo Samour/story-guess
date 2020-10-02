@@ -6,6 +6,7 @@ const roles = [
   {
     name: 'MANAGE_QUIZ_DB',
     permissions: [
+      'readGuessItemData',
       'createGuessItem',
       'updateGuessItem',
       'deleteGuessItem',

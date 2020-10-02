@@ -2,11 +2,19 @@ import { Router } from 'express'
 import { IGuessItemService } from '../../services/GuessItemService';
 import routeBridge from '../../utils/routeBridge';
 import permission from '../../interceptors/permissionsInterceptor';
+import { Category } from '../../../ts-shared/dtos/guess/GuessItem';
 
 export default (guessItemService: IGuessItemService): Router => {
   const router = Router();
 
-  router.post('/', permission('createGuessItem'), routeBridge(async (req) =>
+  router.get('/', permission('readGuessItemData'), routeBridge(async (req) =>
+    guessItemService.loadGuessItems(
+      req.query.category as Category,
+      req.query.search as string,
+      Number.parseInt(req.query.offset as string || '0'),
+      Number.parseInt(req.query.limit as string || '100'),
+    )
+  )).post('/', permission('createGuessItem'), routeBridge(async (req) =>
     guessItemService.createGuessItem(req.body)
   )).put('/:itemId', permission('updateGuessItem'), routeBridge(async (req) =>
     guessItemService.updateGuessItem(req.params.itemId, req.body)
