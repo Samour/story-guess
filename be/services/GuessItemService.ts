@@ -56,6 +56,7 @@ export class GuessItemService implements IGuessItemService {
       throw new NotFoundError();
     }
     item.category = data.category;
+    item.status = data.status;
     item.title = data.title;
     item.alternateNames = data.alternateNames;
     this.normalizeAltNames(item);

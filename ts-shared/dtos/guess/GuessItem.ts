@@ -4,6 +4,11 @@ export enum Category {
   BOOK = 'BOOK',
 }
 
+export enum GuessItemStatus {
+  ACTIVE = 'ACTIVE',
+  HIDDEN = 'HIDDEN',
+}
+
 export interface ItemHintDto {
   id: string;
   level: number;
@@ -12,6 +17,7 @@ export interface ItemHintDto {
 
 export interface GuessItemDto {
   id: string;
+  status: GuessItemStatus;
   category: Category;
   title: string;
   alternateNames: string[];

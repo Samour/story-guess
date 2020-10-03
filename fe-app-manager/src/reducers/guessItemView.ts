@@ -11,6 +11,7 @@ import { IUpdateViewGuessItemAltNamesEvent } from '../events/UpdateViewGuessItem
 import { IUpdateViewGuessItemHintTextEvent } from '../events/UpdateViewGuessItemHintTextEvent';
 import { IUpdateViewGuessItemHintLevelEvent } from '../events/UpdateViewGuessItemHintLevelEvent';
 import { IViewGuessItemRemoveHintEvent } from '../events/ViewGuessItemRemoveHintEvent';
+import { IUpdateViewGuessItemStatusEvent } from '../events/UpdateViewGuessItemStatusEvent';
 
 const initialState: IGuessItemViewState = {
   itemId: null,
@@ -105,6 +106,18 @@ function reducer(state: IGuessItemViewState | undefined, event: IEvent): IGuessI
       item: {
         ...state.item,
         category,
+      },
+    };
+  } else if (event.type === EventType.UPDATE_VIEW_GUESS_ITEM_STATUS) {
+    if (!state.item) {
+      return state;
+    }
+    const { status } = event as IUpdateViewGuessItemStatusEvent;
+    return {
+      ...state,
+      item: {
+        ...state.item,
+        status,
       },
     };
   } else if (event.type === EventType.UPDATE_VIEW_GUESS_ITEM_ALT_NAMES) {

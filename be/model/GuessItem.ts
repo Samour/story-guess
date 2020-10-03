@@ -1,4 +1,4 @@
-import { Category } from '../../ts-shared/dtos/guess/GuessItem';
+import { Category, GuessItemStatus } from '../../ts-shared/dtos/guess/GuessItem';
 
 export interface IItemHint {
   id: string;
@@ -8,6 +8,7 @@ export interface IItemHint {
 
 export interface IGuessItem {
   _id: string;
+  status: GuessItemStatus;
   category: Category;
   title: string;
   alternateNames: string[];

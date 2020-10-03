@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core';
-import { DataGrid, Columns } from '@material-ui/data-grid';
-import { Category, GuessItemDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
+import { createStyles, makeStyles } from '@material-ui/core';
+import { Cancel } from '@material-ui/icons';
+import { DataGrid, Columns, CellParams } from '@material-ui/data-grid';
+import { Category, GuessItemDto, GuessItemStatus } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { PageResponse } from '@story-guess/ts-shared/dtos/page';
 import { IGuessItemsTableConfig } from '../../../state/config/guessItemsTable';
 import { IGuessItemsListStrings } from '../../../state/strings/guessItemsList';
@@ -11,11 +12,15 @@ import { IState } from '../../../state';
 import { getManager } from '../../../services/manager';
 import { viewGuessItemEvent } from '../../../events/ViewGuessItemEvent';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => createStyles({
   table: {
     height: 500,
   },
-});
+  removedIcon: {
+    color: theme.palette.secondary.main,
+    marginRight: 10,
+  },
+}));
 
 interface ICState {
   tableConfig: IGuessItemsTableConfig;
@@ -58,8 +63,31 @@ function Table({
 
   const classes = useStyles();
 
+  const renderTitleCell = (cell: CellParams): ReactElement => {
+    const icon = () => {
+      if (cell.data.status !== GuessItemStatus.ACTIVE) {
+        return <Cancel className={classes.removedIcon} />;
+      } else {
+        return null;
+      }
+    };
+  
+    return (
+      <>
+        {icon()}
+        {cell.value}
+      </>
+    );
+  };
+
   const columns: Columns = [
-    { headerName: strings.columns.answer, field: 'title', width: tableConfig.colWidths.answer, sortable: false },
+    {
+      headerName: strings.columns.answer,
+      field: 'title',
+      width: tableConfig.colWidths.answer,
+      sortable: false,
+      renderCell: renderTitleCell,
+    },
     { headerName: strings.columns.category, field: 'category', width: tableConfig.colWidths.category, sortable: false },
   ];
 

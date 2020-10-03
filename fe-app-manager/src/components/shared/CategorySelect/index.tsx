@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { MenuItem, FormControl, InputLabel, Select, makeStyles, createStyles } from '@material-ui/core';
+import { MenuItem, FormControl, InputLabel, Select, makeStyles } from '@material-ui/core';
 import { Category } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { IState } from '../../../state';
 
-const useStyles = makeStyles(() => createStyles({
+const useStyles = makeStyles({
   select: {
     width: '100%',
   },
-}));
+});
 
 interface IProps {
   allOption?: boolean;

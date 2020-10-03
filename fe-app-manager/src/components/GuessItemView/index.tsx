@@ -10,10 +10,14 @@ import {
   TextField,
   Fab,
   Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   makeStyles,
 } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
-import { Category, GuessItemDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
+import { Category, GuessItemDto, GuessItemStatus } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import CategorySelect from '../shared/CategorySelect';
 import { IState } from '../../state';
 import { getManager } from '../../services/manager';
@@ -27,6 +31,7 @@ import { updateViewGuessItemHintTextEvent } from '../../events/UpdateViewGuessIt
 import { updateViewGuessItemHintLevelEvent } from '../../events/UpdateViewGuessItemHintLevelEvent';
 import { viewGuessItemAddHintEvent } from '../../events/ViewGuessItemAddHintEvent';
 import { viewGuessItemRemoveHintEvent } from '../../events/ViewGuessItemRemoveHintEvent';
+import { updateViewGuessItemStatusEvent } from '../../events/UpdateViewGuessItemStatusEvent';
 
 const useStyles = makeStyles({
   center: {
@@ -37,6 +42,9 @@ const useStyles = makeStyles({
   },
   noMargin: {
     margin: 'unset',
+  },
+  select: {
+    width: '100%',
   },
 });
 
@@ -67,6 +75,7 @@ const mapState = (state: IState): ICState => ({
 interface IActions {
   setTitle: (title: string) => void;
   setCategory: (category: Category) => void;
+  setStatus: (status: GuessItemStatus) => void;
   setAlternateNames: (namesText: string) => void;
   setHintText: (hintId: string, title: string) => void;
   setHintLevel: (hintId: string, level: string) => void;
@@ -78,6 +87,7 @@ interface IActions {
 const mapActions = (dispatch: Dispatch): IActions => ({
   setTitle: (title) => dispatch(updateViewGuessItemTitleEvent(title)),
   setCategory: (category) => dispatch(updateViewGuessItemCategoryEvent(category)),
+  setStatus: (status) => dispatch(updateViewGuessItemStatusEvent(status)),
   setAlternateNames: (namesText) => dispatch(updateViewGuessItemAltNamesEvent(namesText.split('\n'))),
   setHintText: (hintId, title) => dispatch(updateViewGuessItemHintTextEvent(hintId, title)),
   setHintLevel: (hintId, level) => dispatch(updateViewGuessItemHintLevelEvent(hintId, level)),
@@ -92,6 +102,7 @@ function GuessItemView({
   item,
   setTitle,
   setCategory,
+  setStatus,
   setAlternateNames,
   setHintText,
   setHintLevel,
@@ -132,6 +143,19 @@ function GuessItemView({
           </Hidden>
           <Grid item xs={2}>
             <CategorySelect value={item.category} onChange={(c) => setCategory(c as Category)} />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container direction="row-reverse">
+          <Grid item xs={4}>
+            <FormControl className={classes.select}>
+              <InputLabel>Status</InputLabel>
+              <Select value={item.status} onChange={(e) => setStatus(e.target.value as GuessItemStatus)}>
+                <MenuItem value={GuessItemStatus.ACTIVE}>Show item to app users</MenuItem>
+                <MenuItem value={GuessItemStatus.HIDDEN}>Hide item from app users</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
       </Grid>

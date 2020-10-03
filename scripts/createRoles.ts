@@ -9,7 +9,6 @@ const roles = [
       'readGuessItemData',
       'createGuessItem',
       'updateGuessItem',
-      'deleteGuessItem',
     ],
   },
 ];
