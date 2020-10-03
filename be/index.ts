@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as cors from 'cors';
 import { getManager } from './servicesManager';
 import authenticationErrorHandler from './handlers/authenticationErrorHandler';
 import authorizationErrorHandler from './handlers/authorizationErrorHandler';
@@ -8,7 +9,8 @@ import restErrorHandler from './handlers/restErrorHandler';
 const main = async (): Promise<void> => {
   const app = express();
 
-  app.use(express.json())
+  app.use(cors())
+    .use(express.json())
     .use(getManager().getAuthenticationInterceptor()({
       include: [
         '/',

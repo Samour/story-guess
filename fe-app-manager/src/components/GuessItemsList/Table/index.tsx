@@ -38,9 +38,11 @@ function Table({ tableConfig, strings, loading, data }: ICState): JSX.Element {
     <div className="guess-item-table-container">
       <DataGrid autoPageSize
         disableSelectionOnClick
+        paginationMode="server"
         loading={loading}
         columns={columns}
         rows={rows}
+        rowCount={data?.total || 0}
         pageSize={tableConfig.pageSize}
         rowsPerPageOptions={[tableConfig.pageSize]} />
     </div>

@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.log-in-form {
+  margin-top: 150px;
+}
+
 .guess-item-table-container {
   height: 600px;
 }

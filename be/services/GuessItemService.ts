@@ -7,7 +7,7 @@ import { IGuessItem } from '../model/GuessItem';
 import { IGuessItemRepository } from '../repositories/GuessItemRepository';
 
 export interface IGuessItemService {
-  loadGuessItems(category: Category | null, search: string | null, offset: number, limit: number): Promise<PageResponse<IGuessItem>>;
+  loadGuessItems(category: Category | null, search: string | null, offset: number, limit: number): Promise<PageResponse<GuessItemDto>>;
   createGuessItem(data: GuessItemDto): Promise<GuessItemDto>;
   updateGuessItem(id: string, data: GuessItemDto): Promise<GuessItemDto>;
   deleteGuessItem(id: string): Promise<void>;
@@ -18,14 +18,14 @@ export class GuessItemService implements IGuessItemService {
   constructor(private readonly guessItemConverter: IGuessItemConverter,
     private readonly guessItemRepository: IGuessItemRepository) { }
 
-  async loadGuessItems(category: Category | null, search: string | null, offset: number, limit: number): Promise<PageResponse<IGuessItem>> {
+  async loadGuessItems(category: Category | null, search: string | null, offset: number, limit: number): Promise<PageResponse<GuessItemDto>> {
     const [items, total] = await Promise.all([
       this.guessItemRepository.searchItems(category, search, offset, limit),
       this.guessItemRepository.countItems(category, search),
     ]);
 
     return {
-      items,
+      items: items.map((i) => this.guessItemConverter.entityToDto(i)),
       total,
       offset,
       limit,

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@story-guess/ts-shared": "file:../ts-shared",
     "@material-ui/core": "^4.11.0",
     "@material-ui/data-grid": "^4.0.0-alpha.6",
     "@testing-library/jest-dom": "^4.2.4",

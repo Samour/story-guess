@@ -6,12 +6,12 @@ export interface IGuessItemApiService {
   getItems(offset: number, limit: number): Promise<PageResponse<GuessItemDto>>;
 }
 
-export class GuessItemService implements IGuessItemApiService {
+export class GuessItemApiService implements IGuessItemApiService {
 
   constructor(private readonly apiService: IApiService) { }
 
   async getItems(offset: number, limit: number): Promise<PageResponse<GuessItemDto>> {
-    const url = this.apiService.buildUrl('/guessItem');
+    const url = await this.apiService.buildUrl('/guessItem');
     url.searchParams.set('offset', `${offset}`);
     url.searchParams.set('limit', `${limit}`)
 
