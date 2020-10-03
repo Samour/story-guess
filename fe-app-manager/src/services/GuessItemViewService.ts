@@ -29,12 +29,17 @@ export class GuessItemViewService implements IGuessItemViewService {
 
   async save(): Promise<void> {
     const { itemId, item } = this.store.getState().guessItemView;
-    if (!itemId || !item) {
+    if (!item) {
       return;
     }
 
     await appHandler(this.store)(async () => {
-      await this.guessItemApiService.updateItem(itemId, item);
+      if (itemId) {
+        await this.guessItemApiService.updateItem(itemId, item);
+      } else {
+        await this.guessItemApiService.createItem(item);
+      }
+
       this.store.dispatch(closeGuessItemViewEvent());
     });
   }

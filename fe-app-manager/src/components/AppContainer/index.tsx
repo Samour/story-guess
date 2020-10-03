@@ -26,7 +26,7 @@ const mapState = (state: IState): ICState => ({
   strings: {
     logOutBtn: state.strings.appBar.logOutBtn,
   },
-  itemView: !!state.guessItemView.itemId,
+  itemView: state.guessItemView.newItem || !!state.guessItemView.itemId,
 });
 
 function AppContainer({ strings, itemView }: ICState): JSX.Element {

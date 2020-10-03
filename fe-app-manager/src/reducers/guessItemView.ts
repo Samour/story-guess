@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { ItemHintDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
+import { GuessItemStatus, ItemHintDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { EventType, IEvent } from '../events/IEvent';
 import { IViewGuessItemDataEvent } from '../events/ViewGuessItemDataEvent';
 import { IViewGuessItemEvent } from '../events/ViewGuessItemEvent';
@@ -15,6 +15,7 @@ import { IUpdateViewGuessItemStatusEvent } from '../events/UpdateViewGuessItemSt
 
 const initialState: IGuessItemViewState = {
   itemId: null,
+  newItem: false,
   item: null,
 };
 
@@ -76,7 +77,21 @@ function reducer(state: IGuessItemViewState | undefined, event: IEvent): IGuessI
     return {
       ...state,
       itemId,
+      newItem: false,
       item: null,
+    };
+  } else if (event.type === EventType.OPEN_NEW_GUESS_ITEM) {
+    return {
+      itemId: null,
+      newItem: true,
+      item: {
+        id: null as any,
+        status: GuessItemStatus.ACTIVE,
+        title: '',
+        category: null as any,
+        alternateNames: [],
+        hints: [],
+      },
     };
   } else if (event.type === EventType.VIEW_GUESS_ITEM_DATA) {
     const { item } = event as IViewGuessItemDataEvent;
@@ -192,6 +207,7 @@ function reducer(state: IGuessItemViewState | undefined, event: IEvent): IGuessI
     return {
       ...state,
       itemId: null,
+      newItem: false,
       item: null,
     };
   } else {

@@ -10,6 +10,7 @@ interface IGuessItemFilterOptions {
 export interface IGuessItemApiService {
   getItem(id: string): Promise<GuessItemDto>;
   getItems(offset: number, limit: number, filter?: IGuessItemFilterOptions): Promise<PageResponse<GuessItemDto>>;
+  createItem(data: GuessItemDto): Promise<void>;
   updateItem(id: string, data: GuessItemDto): Promise<void>;
 }
 
@@ -34,6 +35,18 @@ export class GuessItemApiService implements IGuessItemApiService {
     }
 
     return this.apiService.invoke(url.toString());
+  }
+
+  async createItem(data: GuessItemDto): Promise<void> {
+    const url = await this.apiService.buildUrl('/guessItem');
+
+    return this.apiService.invoke(url.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
   }
 
   async updateItem(id: string, data: GuessItemDto): Promise<void> {

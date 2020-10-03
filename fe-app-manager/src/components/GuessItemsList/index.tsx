@@ -7,7 +7,10 @@ import {
   FormLabel,
   Input,
   Hidden,
+  Fab,
+  makeStyles,
 } from '@material-ui/core';
+import { Add } from '@material-ui/icons';
 import { Category } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import Table from './Table';
 import { IState } from '../../state';
@@ -15,6 +18,15 @@ import { guessItemsFilterCategoryEvent } from '../../events/GuessItemsFilterCate
 import { guessItemsSearchEvent } from '../../events/GuessItemsSearchEvent';
 import { getManager } from '../../services/manager';
 import CategorySelect from '../shared/CategorySelect';
+import { openNewGuessItemEvent } from '../../events/OpenNewGuessItemEvent';
+
+const useStyles = makeStyles({
+  fab: {
+    position: 'fixed',
+    bottom: 50,
+    right: 50,
+  },
+});
 
 interface ICState {
   strings: {
@@ -35,14 +47,25 @@ const mapState = (state: IState): ICState => ({
 interface IActions {
   setCategory: (category: Category | 'ALL') => void;
   setSearch: (search: string) => void;
+  openNewGuessItem: () => void;
 }
 
 const mapActions = (dispatch: Dispatch): IActions => ({
   setCategory: (category) => dispatch(guessItemsFilterCategoryEvent(category)),
   setSearch: (search) => dispatch(guessItemsSearchEvent(search)),
+  openNewGuessItem: () => dispatch(openNewGuessItemEvent()),
 });
 
-function GuessItemsList({ strings, filterCategory, search, setCategory, setSearch }: ICState & IActions): JSX.Element {
+function GuessItemsList({
+  strings,
+  filterCategory,
+  search,
+  setCategory,
+  setSearch,
+  openNewGuessItem,
+}: ICState & IActions): JSX.Element {
+  const classes = useStyles();
+
   const captureKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       getManager().getGuessItemsListService().initialise();
@@ -74,6 +97,9 @@ function GuessItemsList({ strings, filterCategory, search, setCategory, setSearc
           </Grid>
         </Grid>
       </Grid>
+      <Fab className={classes.fab} color="primary" onClick={openNewGuessItem}>
+        <Add />
+      </Fab>
     </Grid>
   );
 }
