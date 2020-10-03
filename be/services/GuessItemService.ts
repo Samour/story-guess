@@ -8,6 +8,7 @@ import { IGuessItemRepository } from '../repositories/GuessItemRepository';
 
 export interface IGuessItemService {
   loadGuessItems(category: Category | null, search: string | null, offset: number, limit: number): Promise<PageResponse<GuessItemDto>>;
+  getGuessItem(id: string): Promise<GuessItemDto>;
   createGuessItem(data: GuessItemDto): Promise<GuessItemDto>;
   updateGuessItem(id: string, data: GuessItemDto): Promise<GuessItemDto>;
   deleteGuessItem(id: string): Promise<void>;
@@ -32,14 +33,17 @@ export class GuessItemService implements IGuessItemService {
     };
   }
 
+  async getGuessItem(id: string): Promise<GuessItemDto> {
+    return this.guessItemConverter.entityToDto(await this.guessItemRepository.findById(id));
+  }
+
   async createGuessItem(data: GuessItemDto): Promise<GuessItemDto> {
     const item: IGuessItem = {
       ...this.guessItemConverter.dtoToEntity(data),
       _id: uuid(),
     };
-    if (!item.alternateNames.includes(item.title)) {
-      item.alternateNames.push(item.title);
-    }
+    this.normalizeAltNames(item);
+    this.normaliseHints(item);
 
     await this.guessItemRepository.save(item);
 
@@ -54,14 +58,29 @@ export class GuessItemService implements IGuessItemService {
     item.category = data.category;
     item.title = data.title;
     item.alternateNames = data.alternateNames;
-    if (!item.alternateNames.includes(item.title)) {
-      item.alternateNames.push(item.title);
-    }
+    this.normalizeAltNames(item);
     item.hints = data.hints;
+    this.normaliseHints(item);
 
     await this.guessItemRepository.save(item);
 
     return this.guessItemConverter.entityToDto(item);
+  }
+
+  private normalizeAltNames(item: IGuessItem): void {
+    if (!item.alternateNames.includes(item.title)) {
+      item.alternateNames.push(item.title);
+    }
+
+    item.alternateNames = item.alternateNames.map((i) => i.trim())
+      .filter((i) => i.length);
+  }
+
+  private normaliseHints(item: IGuessItem): void {
+    item.hints.forEach((h) => h.text = h.text.trim());
+    item.hints = item.hints.filter(({ text }) => !!text.length);
+    item.hints.filter(({ id }) => !id)
+      .forEach((h) => h.id = uuid());
   }
 
   async deleteGuessItem(id: string): Promise<void> {

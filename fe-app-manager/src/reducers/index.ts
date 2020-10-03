@@ -4,6 +4,7 @@ import strings from './strings';
 import currentUser from './currentUser';
 import logInForm from './logInForm';
 import guessItemsList from './guessItemsList';
+import guessItemView from './guessItemView';
 
 export default combineReducers({
   config,
@@ -11,4 +12,5 @@ export default combineReducers({
   currentUser,
   logInForm,
   guessItemsList,
+  guessItemView,
 });

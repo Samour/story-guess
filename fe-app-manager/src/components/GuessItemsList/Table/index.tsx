@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { DataGrid, Columns } from '@material-ui/data-grid';
 import { Category, GuessItemDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { PageResponse } from '@story-guess/ts-shared/dtos/page';
@@ -8,12 +9,13 @@ import { IGuessItemsTableConfig } from '../../../state/config/guessItemsTable';
 import { IGuessItemsListStrings } from '../../../state/strings/guessItemsList';
 import { IState } from '../../../state';
 import { getManager } from '../../../services/manager';
+import { viewGuessItemEvent } from '../../../events/ViewGuessItemEvent';
 
-const useStyles = makeStyles(() => createStyles({
+const useStyles = makeStyles({
   table: {
     height: 500,
   },
-}));
+});
 
 interface ICState {
   tableConfig: IGuessItemsTableConfig;
@@ -33,7 +35,23 @@ const mapState = (state: IState): ICState => ({
   data: state.guessItemsList.page,
 });
 
-function Table({ tableConfig, strings, categoryStringMap, filterCategory, loading, data }: ICState): JSX.Element {
+interface IActions {
+  openItem: (itemId: string) => void;
+}
+
+const mapActions = (dispatch: Dispatch): IActions => ({
+  openItem: (itemId) => dispatch(viewGuessItemEvent(itemId)),
+});
+
+function Table({
+  tableConfig,
+  strings,
+  categoryStringMap,
+  filterCategory,
+  loading,
+  data,
+  openItem,
+}: ICState & IActions): JSX.Element {
   useEffect(() => {
     getManager().getGuessItemsListService().initialise();
   }, [filterCategory]);
@@ -60,9 +78,10 @@ function Table({ tableConfig, strings, categoryStringMap, filterCategory, loadin
         rows={rows}
         rowCount={data?.total || 0}
         pageSize={tableConfig.pageSize}
-        rowsPerPageOptions={[tableConfig.pageSize]} />
+        rowsPerPageOptions={[tableConfig.pageSize]}
+        onRowClick={(r) => openItem(r.data.id as string)} />
     </div>
   );
 }
 
-export default connect(mapState)(Table);
+export default connect(mapState, mapActions)(Table);

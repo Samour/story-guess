@@ -8,12 +8,19 @@ interface IGuessItemFilterOptions {
 }
 
 export interface IGuessItemApiService {
+  getItem(id: string): Promise<GuessItemDto>;
   getItems(offset: number, limit: number, filter?: IGuessItemFilterOptions): Promise<PageResponse<GuessItemDto>>;
+  updateItem(id: string, data: GuessItemDto): Promise<void>;
 }
 
 export class GuessItemApiService implements IGuessItemApiService {
 
   constructor(private readonly apiService: IApiService) { }
+
+  async getItem(id: string): Promise<GuessItemDto> {
+    const url = await this.apiService.buildUrl(`/guessItem/${id}`);
+    return this.apiService.invoke(url.toString());
+  }
 
   async getItems(offset: number, limit: number, filter: IGuessItemFilterOptions = {}): Promise<PageResponse<GuessItemDto>> {
     const url = await this.apiService.buildUrl('/guessItem');
@@ -27,5 +34,17 @@ export class GuessItemApiService implements IGuessItemApiService {
     }
 
     return this.apiService.invoke(url.toString());
+  }
+
+  async updateItem(id: string, data: GuessItemDto): Promise<void> {
+    const url = await this.apiService.buildUrl(`/guessItem/${id}`);
+
+    return this.apiService.invoke(url.toString(), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
   }
 }

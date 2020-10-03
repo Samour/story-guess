@@ -3,4 +3,8 @@ export interface IGuessItemsListStrings {
     answer: string;
     category: string;
   };
+  filter: {
+    search: string;
+    category: string;
+  };
 }

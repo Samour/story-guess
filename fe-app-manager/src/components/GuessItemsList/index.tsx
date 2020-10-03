@@ -1,38 +1,33 @@
 import React from 'react';
 import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import {
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   FormGroup,
   FormLabel,
   Input,
   Hidden,
-  makeStyles,
-  createStyles,
 } from '@material-ui/core';
 import { Category } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import Table from './Table';
 import { IState } from '../../state';
 import { guessItemsFilterCategoryEvent } from '../../events/GuessItemsFilterCategoryEvent';
-import { connect } from 'react-redux';
 import { guessItemsSearchEvent } from '../../events/GuessItemsSearchEvent';
 import { getManager } from '../../services/manager';
-
-const useStyles = makeStyles(() => createStyles({
-  select: {
-    width: '100%',
-  },
-}));
+import CategorySelect from '../shared/CategorySelect';
 
 interface ICState {
+  strings: {
+    search: string;
+  };
   filterCategory: Category | 'ALL';
   search: string;
 }
 
 const mapState = (state: IState): ICState => ({
+  strings: {
+    search: state.strings.guessItemsList.filter.search,
+  },
   filterCategory: state.guessItemsList.category,
   search: state.guessItemsList.search,
 });
@@ -47,9 +42,7 @@ const mapActions = (dispatch: Dispatch): IActions => ({
   setSearch: (search) => dispatch(guessItemsSearchEvent(search)),
 });
 
-function GuessItemsList({ filterCategory, search, setCategory, setSearch }: ICState & IActions): JSX.Element {
-  const classes = useStyles();
-
+function GuessItemsList({ strings, filterCategory, search, setCategory, setSearch }: ICState & IActions): JSX.Element {
   const captureKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       getManager().getGuessItemsListService().initialise();
@@ -62,7 +55,7 @@ function GuessItemsList({ filterCategory, search, setCategory, setSearch }: ICSt
         <Grid container direction="row">
           <Grid item xs={12} md={9}>
             <FormGroup>
-              <FormLabel>Search</FormLabel>
+              <FormLabel>{strings.search}</FormLabel>
               <Input value={search} onChange={(e) => setSearch(e.target.value)} onKeyPress={captureKey} />
             </FormGroup>
           </Grid>
@@ -70,15 +63,7 @@ function GuessItemsList({ filterCategory, search, setCategory, setSearch }: ICSt
             <Grid item md={1}></Grid>
           </Hidden>
           <Grid item xs={2}>
-            <FormControl className={classes.select}>
-              <InputLabel>Category</InputLabel>
-              <Select value={filterCategory} onChange={(e) => setCategory(e.target.value as any)}>
-                <MenuItem value={'ALL'}>All</MenuItem>
-                <MenuItem value={Category.BOOK}>Books</MenuItem>
-                <MenuItem value={Category.MOVIE}>Movies</MenuItem>
-                <MenuItem value={Category.TV_SHOW}>TV Shows</MenuItem>
-              </Select>
-            </FormControl>
+            <CategorySelect allOption value={filterCategory} onChange={setCategory} />
           </Grid>
         </Grid>
       </Grid>

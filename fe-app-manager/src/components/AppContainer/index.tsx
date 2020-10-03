@@ -1,35 +1,46 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { AppBar, Toolbar, Container, Button, Box, makeStyles, createStyles } from '@material-ui/core';
+import { AppBar, Toolbar, Container, Button, Box, makeStyles } from '@material-ui/core';
 import { getManager } from '../../services/manager';
 import { IState } from '../../state';
 import GuessItemsList from '../GuessItemsList';
+import GuessItemView from '../GuessItemView';
 
-const useStyles = makeStyles(() => createStyles({
+const useStyles = makeStyles({
   spacer: {
     flexGrow: 1,
   },
   content: {
     paddingTop: 50,
   },
-}));
+});
 
 interface ICState {
   strings: {
     logOutBtn: string;
   };
+  itemView: boolean;
 }
 
 const mapState = (state: IState): ICState => ({
   strings: {
     logOutBtn: state.strings.appBar.logOutBtn,
   },
+  itemView: !!state.guessItemView.itemId,
 });
 
-function AppContainer({ strings }: ICState): JSX.Element {
+function AppContainer({ strings, itemView }: ICState): JSX.Element {
   const classes = useStyles();
 
   const logOut = () => getManager().getLogInService().logOut();
+
+  const MainComponent = () => {
+    if (itemView) {
+      return <GuessItemView />;
+    } else {
+      return <GuessItemsList />;
+    }
+  };
 
   return (
     <>
@@ -40,7 +51,7 @@ function AppContainer({ strings }: ICState): JSX.Element {
         </Toolbar>
       </AppBar>
       <Container maxWidth="md" className={classes.content}>
-        <GuessItemsList />
+        {MainComponent()}
       </Container>
     </>
   );

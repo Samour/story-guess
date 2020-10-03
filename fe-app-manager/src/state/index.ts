@@ -3,6 +3,7 @@ import { IStrings } from './strings';
 import { ICurrentUserState } from './currentUser';
 import { ILogInFormState } from './logInForm';
 import { IGuessItemsListState } from './guessItemsList';
+import { IGuessItemViewState } from './guessItemView';
 
 export interface IState {
   config: IConfig;
@@ -10,4 +11,5 @@ export interface IState {
   currentUser: ICurrentUserState;
   logInForm: ILogInFormState;
   guessItemsList: IGuessItemsListState;
+  guessItemView: IGuessItemViewState;
 }

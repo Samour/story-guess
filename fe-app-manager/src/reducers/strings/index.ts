@@ -26,9 +26,22 @@ const initialState: IStrings = {
       answer: 'Answer',
       category: 'Category',
     },
+    filter: {
+      search: 'Search',
+      category: 'Category',
+    },
+  },
+  guessItemView: {
+    title: 'Title',
+    alternateNames: 'Alternate Names',
+    hints: 'Hints',
+    hintText: 'Hint text',
+    hintDifficulty: 'Hint difficulty (1-3)',
+    backBtn: 'Back',
+    saveBtn: 'Save',
   },
 };
 
-export default function(state: IStrings | undefined, event: IEvent): IStrings {
+export default function (state: IStrings | undefined, event: IEvent): IStrings {
   return initialState;
 }

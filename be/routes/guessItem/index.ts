@@ -16,6 +16,8 @@ export default (guessItemService: IGuessItemService): Router => {
     )
   )).post('/', permission('createGuessItem'), routeBridge(async (req) =>
     guessItemService.createGuessItem(req.body)
+  )).get('/:itemId', permission('readGuessItemData'), routeBridge(async (req) =>
+    guessItemService.getGuessItem(req.params.itemId)
   )).put('/:itemId', permission('updateGuessItem'), routeBridge(async (req) =>
     guessItemService.updateGuessItem(req.params.itemId, req.body)
   )).delete('/:itemId', permission('deleteGuessItem'), routeBridge(async (req) =>

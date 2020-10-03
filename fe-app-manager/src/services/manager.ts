@@ -6,6 +6,7 @@ import { ApiService, IApiService } from './api/ApiService';
 import { IGuessItemApiService, GuessItemApiService } from './api/GuessItemApiService';
 import { ISessionStorageService, LocalStorageEphemeralSessionStorageService } from './api/SessionStorageService';
 import { ILogInService, LogInService } from './LogInService';
+import { GuessItemViewService, IGuessItemViewService } from './GuessItemViewService';
 
 class ServicesManager {
 
@@ -40,6 +41,11 @@ class ServicesManager {
   getGuessItemsListService: () => IGuessItemsListService = memo(() =>
     new GuessItemsListService(this.store, this.getGuessItemApiService())
   );
+
+  getGuessItemViewService: () => IGuessItemViewService = memo(() => new GuessItemViewService(
+    this.store,
+    this.getGuessItemApiService(),
+  ));
 }
 
 export const initialise = (store: Store<IState>): ServicesManager => ServicesManager.initialise(store);
