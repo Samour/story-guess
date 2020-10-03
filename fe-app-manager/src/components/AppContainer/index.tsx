@@ -9,6 +9,9 @@ const useStyles = makeStyles(() => createStyles({
   spacer: {
     flexGrow: 1,
   },
+  content: {
+    paddingTop: 50,
+  },
 }));
 
 interface ICState {
@@ -36,7 +39,7 @@ function AppContainer({ strings }: ICState): JSX.Element {
           <Button variant="outlined" onClick={logOut}>{strings.logOutBtn}</Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md">
+      <Container maxWidth="md" className={classes.content}>
         <GuessItemsList />
       </Container>
     </>

@@ -8,6 +8,9 @@ import { logInFormSetPasswordEvent } from '../../events/LogInFormSetPasswordEven
 import { getManager } from '../../services/manager';
 
 const useStyles = makeStyles(() => createStyles({
+  form: {
+    marginTop: 150,
+  },
   centered: {
     textAlign: 'center',
   },
@@ -54,7 +57,7 @@ function LogIn({ username, password, error, strings, setUsername, setPassword }:
 
   return (
     <Container maxWidth="xs">
-      <form className="log-in-form">
+      <form className={classes.form}>
         <Grid container direction="column" spacing={2}>
           <Grid item xs={12}>
             <FormGroup>

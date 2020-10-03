@@ -52,6 +52,7 @@ export class ApiService implements IApiService {
       })))
       .then(({ token }) => {
         this.inFlightRefresh = undefined;
+        this.sessionStorageService.storeToken(token);
         return token;
       }).catch((e) => {
         this.sessionStorageService.clearSession();

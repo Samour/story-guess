@@ -11,11 +11,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-.log-in-form {
-  margin-top: 150px;
-}
-
-.guess-item-table-container {
-  height: 600px;
-}
