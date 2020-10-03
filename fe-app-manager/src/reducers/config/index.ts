@@ -30,6 +30,12 @@ const initialState: IConfig = {
         imgSrc: '/img/3rdparty/imdb.png',
         alt: 'IMDb',
       },
+      {
+        validCategories: [Category.BOOK, Category.MOVIE, Category.TV_SHOW],
+        searchLocation: 'https://www.google.com/search?q=%s',
+        imgSrc: '/img/3rdparty/google.svg',
+        alt: 'Google',
+      },
     ],
   },
 };

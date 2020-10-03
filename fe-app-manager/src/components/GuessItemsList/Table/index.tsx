@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core';
 import { Cancel } from '@material-ui/icons';
-import { DataGrid, Columns, CellParams } from '@material-ui/data-grid';
+import { DataGrid, Columns, CellParams, PageChangeParams } from '@material-ui/data-grid';
 import { Category, GuessItemDto, GuessItemStatus } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { PageResponse } from '@story-guess/ts-shared/dtos/page';
 import { IGuessItemsTableConfig } from '../../../state/config/guessItemsTable';
@@ -71,7 +71,7 @@ function Table({
         return null;
       }
     };
-  
+
     return (
       <>
         {icon()}
@@ -91,6 +91,11 @@ function Table({
     { headerName: strings.columns.category, field: 'category', width: tableConfig.colWidths.category, sortable: false },
   ];
 
+  const onPageChange = (page: PageChangeParams) => getManager().getGuessItemsListService().loadPage(
+    (page.page - 1) * page.pageSize,
+    page.pageSize,
+  );
+
   const rows = (data?.items || []).map((r) => ({
     ...r,
     category: categoryStringMap.get(r.category),
@@ -98,8 +103,7 @@ function Table({
 
   return (
     <div className={classes.table}>
-      <DataGrid autoPageSize
-        disableSelectionOnClick
+      <DataGrid disableSelectionOnClick
         paginationMode="server"
         loading={loading}
         columns={columns}
@@ -107,7 +111,8 @@ function Table({
         rowCount={data?.total || 0}
         pageSize={tableConfig.pageSize}
         rowsPerPageOptions={[tableConfig.pageSize]}
-        onRowClick={(r) => openItem(r.data.id as string)} />
+        onRowClick={(r) => openItem(r.data.id as string)}
+        onPageChange={onPageChange} />
     </div>
   );
 }

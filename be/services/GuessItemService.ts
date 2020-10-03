@@ -75,6 +75,7 @@ export class GuessItemService implements IGuessItemService {
 
     item.alternateNames = item.alternateNames.map((i) => i.trim())
       .filter((i) => i.length);
+    item.alternateNames.sort();
   }
 
   private normaliseHints(item: IGuessItem): void {
@@ -82,6 +83,18 @@ export class GuessItemService implements IGuessItemService {
     item.hints = item.hints.filter(({ text }) => !!text.length);
     item.hints.filter(({ id }) => !id)
       .forEach((h) => h.id = uuid());
+    item.hints.sort((a, b) => {
+      const c1 = a.level - b.level;
+      if (c1 !== 0) {
+        return c1;
+      } else if (a.text === b.text) {
+        return 0;
+      } else if (a.text < b.text) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
   }
 
   async deleteGuessItem(id: string): Promise<void> {

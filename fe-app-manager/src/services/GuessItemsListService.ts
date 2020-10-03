@@ -9,6 +9,7 @@ import { appHandler } from '../handlers';
 
 export interface IGuessItemsListService {
   initialise(): Promise<void>;
+  loadPage(offset: number, limit: number): Promise<void>;
 }
 
 export class GuessItemsListService implements IGuessItemsListService {
@@ -16,6 +17,10 @@ export class GuessItemsListService implements IGuessItemsListService {
   constructor(private readonly store: Store<IState>, private readonly guessItemApiService: IGuessItemApiService) { }
 
   async initialise(): Promise<void> {
+    await this.loadPage(0, this.store.getState().config.guessItemsTable.pageSize);
+  }
+
+  async loadPage(offset: number, limit: number): Promise<void> {
     await appHandler(this.store)(async () => {
       this.store.dispatch(guessItemsLoadingEvent());
 
@@ -25,8 +30,8 @@ export class GuessItemsListService implements IGuessItemsListService {
       }
       filter.search = this.store.getState().guessItemsList.search;
       const page: PageResponse<GuessItemDto> = await this.guessItemApiService.getItems(
-        0,
-        this.store.getState().config.guessItemsTable.pageSize,
+        offset,
+        limit,
         filter,
       );
       this.store.dispatch(setGuessItemsPageEvent(page));
