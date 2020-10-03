@@ -32,6 +32,7 @@ import { updateViewGuessItemHintLevelEvent } from '../../events/UpdateViewGuessI
 import { viewGuessItemAddHintEvent } from '../../events/ViewGuessItemAddHintEvent';
 import { viewGuessItemRemoveHintEvent } from '../../events/ViewGuessItemRemoveHintEvent';
 import { updateViewGuessItemStatusEvent } from '../../events/UpdateViewGuessItemStatusEvent';
+import ReferencePageLinks from '../ReferencePageLinks';
 
 const useStyles = makeStyles({
   center: {
@@ -186,6 +187,7 @@ function GuessItemView({
           </Grid>
         </Grid>
       </Grid>
+      <ReferencePageLinks />
     </Grid>
   );
 }

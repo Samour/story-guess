@@ -8,7 +8,6 @@ import {
   TableRow,
   TableCell,
   makeStyles,
-  createStyles,
 } from '@material-ui/core';
 import { ItemHintDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import Row from './Row';
