@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { createStyles, makeStyles } from '@material-ui/core';
 import { Cancel } from '@material-ui/icons';
 import { DataGrid, Columns, CellParams, PageChangeParams } from '@material-ui/data-grid';
-import { Category, GuessItemDto, GuessItemStatus } from '@story-guess/ts-shared/dtos/guess/GuessItem';
+import { Category, GuessItemDto, GuessItemStatus, ItemHintDto } from '@story-guess/ts-shared/dtos/guess/GuessItem';
 import { PageResponse } from '@story-guess/ts-shared/dtos/page';
 import { IGuessItemsTableConfig } from '../../../state/config/guessItemsTable';
 import { IGuessItemsListStrings } from '../../../state/strings/guessItemsList';
@@ -89,6 +89,20 @@ function Table({
       renderCell: renderTitleCell,
     },
     { headerName: strings.columns.category, field: 'category', width: tableConfig.colWidths.category, sortable: false },
+    {
+      headerName: '',
+      field: 'hints',
+      width: tableConfig.colWidths.hintCount,
+      sortable: false,
+      valueGetter: (cell) => {
+        const hints = cell.value as ItemHintDto[];
+        const total = hints.length;
+        const l1 = hints.filter((h) => h.level === 1).length;
+        const l2 = hints.filter((h) => h.level === 2).length;
+        const l3 = hints.filter((h) => h.level === 3).length;
+        return `${total} (${l1} / ${l2} / ${l3})`;
+      },
+    },
   ];
 
   const onPageChange = (page: PageChangeParams) => getManager().getGuessItemsListService().loadPage(

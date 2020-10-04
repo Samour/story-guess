@@ -7,6 +7,7 @@ const initialState: IConfig = {
     colWidths: {
       answer: 500,
       category: 100,
+      hintCount: 150,
     },
     pageSize: 25,
   },
